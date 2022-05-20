@@ -1,0 +1,159 @@
+@import url("https://fonts.googleapis.com/css2?family=Macondo&display=swap");
+
+.title {
+  text-align: center;
+  padding-top: 140px;
+  font-family: "Macondo", cursive;
+  font-size: 100px;
+  color: white;
+  font-weight: bold;
+  letter-spacing: 6px;
+  animation: mymove 4s infinite ease-out;
+}
+
+.title-form {
+  text-align: center;
+  font-family: "Macondo", cursive;
+  font-size: 50px;
+  color: white;
+  font-weight: bold;
+}
+
+.group {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+input {
+  font-size: 16px;
+  padding: 10px;
+  display: block;
+  width: 400px;
+  border: none;
+  border-bottom: 1px solid white;
+  background-color: inherit;
+  color: whitesmoke;
+  margin: 0 auto;
+}
+input:focus {
+  outline: none;
+}
+
+label {
+  color: white;
+  font-size: 18px;
+  position: absolute;
+  pointer-events: none;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 15px;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+
+/* active state */
+input:focus ~ label,
+input:valid ~ label {
+  top: -15px;
+  font-size: 14px;
+  color: white;
+}
+
+/* BOTTOM BARS ================================= */
+.bar {
+  position: relative;
+  display: block;
+  width: 400px;
+  margin: 0 auto;
+}
+.bar:before,
+.bar:after {
+  content: "";
+  height: 2px;
+  width: 0;
+  bottom: 0;
+  position: absolute;
+  background: #78c7d2;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+.bar:before {
+  left: 50%;
+}
+.bar:after {
+  right: 50%;
+}
+
+/* active state */
+input:focus ~ .bar:before,
+input:focus ~ .bar:after {
+  width: 50%;
+}
+
+.btn {
+  border: none;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  background-color: #222;
+  padding: 17px 60px;
+  margin: 0 auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn span {
+  position: relative;
+  z-index: 1;
+}
+
+.btn:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 490%;
+  width: 140%;
+  background: #78c7d2;
+  -webkit-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+  -webkit-transform: translateX(-98%) translateY(-25%) rotate(45deg);
+  transform: translateX(-98%) translateY(-25%) rotate(45deg);
+}
+
+.btn:hover:after {
+  -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
+  transform: translateX(-9%) translateY(-25%) rotate(45deg);
+}
+
+@keyframes mymove {
+  from {
+    text-shadow: red 0 0, cyan 0 0;
+  }
+  to {
+    text-shadow: red -6px 0, cyan 6px 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 60px;
+  }
+  .title-form {
+    font-size: 30px;
+  }
+  .bar {
+    width: 70%;
+  }
+  input {
+    width: 70%;
+  }
+}

@@ -1,40 +1,101 @@
+import { fromDocRef } from "rxfire/firestore";
 import * as ChessJS from "chess.js";
 import { BehaviorSubject } from "rxjs";
+import { auth } from "./firebase";
+import { map } from "rxjs/operators";
 
 const Chess = typeof ChessJS === "function" ? ChessJS : ChessJS.Chess;
 
+let gameRef;
+let member;
+
 const chess = new Chess();
 
-export const gameSubject = new BehaviorSubject({
-  board: chess.board(),
-});
+export let gameSubject;
 
-export function initGame() {
-  const savedGame = localStorage.getItem("savedGame");
-  if (savedGame) {
-    chess.load(savedGame);
+export async function initGame(gameRefFb) {
+  const { currentUser } = auth;
+  if (gameRefFb) {
+    gameRef = gameRefFb;
+    const initialGame = await gameRefFb.get().then((doc) => doc.data());
+    if (!initialGame) {
+      return "Not Found";
+    }
+    const creator = initialGame.members.find(
+      (member) => member.creator === true
+    );
+    if (initialGame.status === "waiting" && creator.uid !== currentUser.uid) {
+      const currUser = {
+        uid: currentUser.uid,
+        name: localStorage.getItem("userName"),
+        piece: creator.piece === "w" ? "b" : "w",
+      };
+      const updatedMembers = [...initialGame.members, currUser];
+      gameRefFb.update({ members: updatedMembers, status: "ready" });
+    } else if (
+      !initialGame.members.map((member) => member.uid).includes(currentUser.uid)
+    ) {
+      return "intruder";
+    }
+    chess.reset();
+    gameSubject = fromDocRef(gameRef).pipe(
+      map((gameDoc) => {
+        const game = gameDoc.data();
+        const { pendingPromotion, gameData, ...restOfGame } = game;
+        member = game.members.find((member) => member.uid === currentUser.uid);
+        const oponent = game.members.find(
+          (member) => member.uid !== currentUser.uid
+        );
+        if (gameData) {
+          chess.load(gameData);
+        }
+        const isGameOver = chess.game_over();
+        return {
+          board: chess.board(),
+          pendingPromotion,
+          isGameOver,
+          turn: member.piece,
+          member,
+          oponent,
+          result: isGameOver ? getGameResult() : null,
+          ...restOfGame,
+        };
+      })
+    );
+  } else {
+    gameRef = null;
+    gameSubject = new BehaviorSubject();
+    const savedGame = localStorage.getItem("savedGame");
+    if (savedGame) {
+      chess.load(savedGame);
+    }
+    updateGame();
   }
-  updateGame();
 }
-
-export function resetGame() {
-  chess.reset();
-  updateGame();
+export async function resetGame() {
+  if (gameRef) {
+    await updateGame(null, true);
+    chess.reset();
+  } else {
+    chess.reset();
+    updateGame();
+  }
 }
 
 export function handleMove(from, to) {
   const promotions = chess
     .moves({ verbose: true })
     .filter((move) => move.promotion);
+  let pendingPromotion;
   if (
     promotions.some(
       (promotion) => `${promotion.from}:${promotion.to}` === `${from}:${to}`
     )
   ) {
-    const pendingPromotion = { from, to, color: promotions[0].color };
+    pendingPromotion = { from, to, color: promotions[0].color };
     updateGame(pendingPromotion);
   }
-  const { pendingPromotion } = gameSubject.getValue();
+
   if (!pendingPromotion) move(from, to);
 }
 
@@ -43,23 +104,43 @@ export function move(from, to, promotion) {
   if (promotion) {
     tempMove.promotion = promotion;
   }
-  const legalMove = chess.move(tempMove);
-  if (legalMove) {
-    updateGame();
+  if (gameRef) {
+    if (member.piece === chess.turn()) {
+      const legalMove = chess.move(tempMove);
+      if (legalMove) {
+        updateGame();
+      }
+    }
+  } else {
+    const legalMove = chess.move(tempMove);
+    if (legalMove) {
+      updateGame();
+    }
   }
 }
 
-function updateGame(pendingPromotion) {
+async function updateGame(pendingPromotion, reset) {
   const isGameOver = chess.game_over();
-  const newGame = {
-    board: chess.board(),
-    pendingPromotion,
-    isGameOver,
-    turn: chess.turn(),
-    result: isGameOver ? getGameResult() : null,
-  };
-  localStorage.setItem("savedGame", chess.fen());
-  gameSubject.next(newGame);
+  if (gameRef) {
+    const updatedData = {
+      gameData: chess.fen(),
+      pendingPromotion: pendingPromotion || null,
+    };
+    if (reset) {
+      updatedData.status = "over";
+    }
+    await gameRef.update(updatedData);
+  } else {
+    const newGame = {
+      board: chess.board(),
+      pendingPromotion,
+      isGameOver,
+      turn: chess.turn(),
+      result: isGameOver ? getGameResult() : null,
+    };
+    localStorage.setItem("savedGame", chess.fen());
+    gameSubject.next(newGame);
+  }
 }
 
 function getGameResult() {

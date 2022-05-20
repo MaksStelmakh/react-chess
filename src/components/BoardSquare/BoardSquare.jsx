@@ -7,13 +7,13 @@ import { handleMove, gameSubject } from "../../Game";
 
 export default function BoardSquare({ piece, black, position }) {
   const [promotion, setPromotion] = useState(null);
-  const [, drop] = useDrop(() => ({
+  const [, drop] = useDrop({
     accept: "piece",
     drop: (item) => {
       const [fromPosition] = item.id.split("_");
       handleMove(fromPosition, position);
     },
-  }));
+  });
   useEffect(() => {
     const subscribe = gameSubject.subscribe(({ pendingPromotion }) => {
       pendingPromotion && pendingPromotion.to === position

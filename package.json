@@ -3,16 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@firebase/webchannel-wrapper": "^0.6.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "chess.js": "^0.13.2",
+    "firebase": "^9.8.1",
     "react": "^16.13.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^16.13.1",
+    "react-firebase-hooks": "^5.0.3",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
-    "rxjs": "^7.5.5"
+    "rxfire": "^4.0.0-2021425213031",
+    "rxjs": "^7.5.5",
+    "tslib": "^2.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
