@@ -39,18 +39,20 @@ export default function Home() {
   return (
     <>
       <div className="home-page">
-        <h1 className="home-title">Play online with your friends ;)</h1>
-        <button
-          className="btn btn-home"
-          type="button"
-          onClick={handlePlayOnline}
-        >
-          <span>Play Online</span>
-        </button>
-        <p className="inform-text">
-          Copy the link of the created game and send it to a friend to play
-          together.
-        </p>
+        <div className="main-menu">
+          <h1 className="home-title">Play online with your friends ;)</h1>
+          <button
+            className="btn btn-home"
+            type="button"
+            onClick={handlePlayOnline}
+          >
+            <span>Play Online</span>
+          </button>
+          <p className="inform-text">
+            Copy the link of the created game and send it to a friend to play
+            together.
+          </p>
+        </div>
       </div>
       <div className={`modal ${showModal ? "is-active" : ""}`}>
         <div className="modal-background"></div>
