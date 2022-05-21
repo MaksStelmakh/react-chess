@@ -3,7 +3,7 @@ import { gameSubject, initGame, resetGame } from "../../Game";
 import Board from "../Board/Board";
 import { useParams, useHistory } from "react-router-dom";
 import { dataBase } from "../../firebase";
-import { async } from "@firebase/util";
+import "./GameApp.css";
 
 function GameApp() {
   const [board, setBoard] = useState([]);
@@ -45,15 +45,17 @@ function GameApp() {
   }
 
   if (loading) {
-    return "Loading...";
+    return <p className="information-text-about-game">Loading...</p>;
   }
 
   if (initResult === "Not Found") {
-    return "Game Not Gound";
+    return <p className="information-text-about-game">Game Not Found</p>;
   }
 
   if (initResult === "intruder") {
-    return "The game is alredy full";
+    return (
+      <p className="information-text-about-game">The game is alredy full</p>
+    );
   }
   return (
     <div className="app-container">
@@ -72,11 +74,13 @@ function GameApp() {
       )}
       <div className="board-container">
         {game.oponent && game.oponent.name && (
-          <span className="tag is-link">{game.oponent.name}</span>
+          <span className="tag is-link name name-oponent">
+            {game.oponent.name}
+          </span>
         )}
         <Board board={board} position={turn} />
         {game.member && game.member.name && (
-          <span className="tag is-link">{game.member.name}</span>
+          <span className="tag is-link name">{game.member.name}</span>
         )}
       </div>
       {result && <p className="vertical-text">{result}</p>}

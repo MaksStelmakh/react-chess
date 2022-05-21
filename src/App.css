@@ -15,7 +15,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(34, 34, 34);
 }
 .user-form {
   max-width: 800px;

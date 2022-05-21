@@ -48,6 +48,12 @@
   background-color: #78c7d2;
 }
 
+@media (max-width: 900px) {
+  .home-page {
+    padding-top: 50px;
+  }
+}
+
 @media (max-width: 460px) {
   .home-page {
     padding-top: 100px;
